@@ -44,48 +44,70 @@ FileCounter Pro is an **all-in-one Mac system utility** that runs entirely offli
 
 ## 🛠️ Requirements
 
-| Requirement | Minimum |
+| Requirement | Details |
 |---|---|
-| **macOS** | 27.0 (Golden Gate) or later |
-| **Chip** | Apple Silicon (M1, M2, M3, M4, or later) |
-| **Xcode CLI Tools** | Must be installed (for `swiftc`) |
-| **Disk Space** | ~50 MB for the compiled app |
-
-> **Note:** This app is compiled using `swiftc` from the command line. You do **not** need the full Xcode IDE — just the Command Line Tools.
+| **Mac** | Any Mac with Apple Silicon chip (M1, M2, M3, M4 or newer) |
+| **macOS** | macOS 27 Golden Gate or later |
 
 ---
 
-## 📥 Installation
+## 📥 How to Install on Your Mac
 
-### Option 1: Build from Source (Recommended)
+### Step 1 — Install Xcode Command Line Tools (one-time setup)
+
+If you've never used Terminal before, don't worry! Open the **Terminal** app (search "Terminal" in Spotlight with `⌘ + Space`), then paste this and press Enter:
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/FileCounterPro.git
+xcode-select --install
+```
+
+A popup will appear — click **Install** and wait for it to finish. This installs the Swift compiler needed to build the app.
+
+### Step 2 — Download the App
+
+In Terminal, paste these commands one by one and press Enter after each:
+
+```bash
+git clone https://github.com/AnkanRoy/FileCounterPro.git
+```
+
+```bash
 cd FileCounterPro
+```
 
-# 2. Make the build script executable
-chmod +x build.sh
+### Step 3 — Build & Install
 
-# 3. Build the app
-./build.sh
+```bash
+chmod +x build.sh && ./build.sh
+```
 
-# 4. Copy to Applications
+Wait about 30 seconds. When you see `✅ Successfully built FileCounter.app`, run:
+
+```bash
 cp -R FileCounter.app /Applications/
+```
 
-# 5. Launch it
+### Step 4 — Open the App
+
+```bash
 open -a /Applications/FileCounter.app
 ```
 
-That's it! The build script compiles all Swift files into a native `.app` bundle with proper `Info.plist`, icon, and code signing.
+Or find **FileCounter** in your Applications folder / Launchpad and double-click it!
 
-### Option 2: Download Pre-built (if available)
+### ⚠️ "App Can't Be Opened" Warning (First Time Only)
 
-Check the [Releases](../../releases) tab for a pre-built `.app` bundle. Download, unzip, drag to `/Applications`, and open.
+macOS blocks apps from unknown developers the first time. Here's how to fix it:
 
-> ⚠️ **First Launch:** macOS may show "app can't be opened because it's from an unidentified developer." To fix this:
-> 1. Go to **System Settings → Privacy & Security**
-> 2. Scroll down and click **"Open Anyway"** next to the FileCounter message
+1. Go to **Apple Menu () → System Settings → Privacy & Security**
+2. Scroll down — you'll see a message saying *"FileCounter was blocked"*
+3. Click **"Open Anyway"**
+4. Click **Open** in the confirmation popup
+5. The app will work normally from now on
+
+### 🗑️ How to Uninstall
+
+Just drag **FileCounter** from your Applications folder into the Trash. Done!
 
 ---
 
