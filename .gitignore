@@ -1,0 +1,11 @@
+# Build artifacts
+FileCounter.app/
+*.o
+*.d
+.DS_Store
+
+# Xcode
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
