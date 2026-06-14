@@ -9,3 +9,13 @@ FileCounter.app/
 *.xcworkspace
 xcuserdata/
 DerivedData/
+
+# Dev/test files
+debug.log
+fix_animations.py
+fix_animations2.py
+testExtract.swift
+testGPS.swift
+testScanner.swift
+test_gps.jpg
+test_malware.sh
