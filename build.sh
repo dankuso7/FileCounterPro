@@ -44,6 +44,8 @@ swiftc \
   SmartUninstallerView.swift \
   SystemJunkScanner.swift \
   SystemJunkView.swift \
+  ZipEngine.swift \
+  ZipCreatorView.swift \
   MacGamingEstimator.swift \
   MacGamingEstimatorView.swift \
   -o "$BIN_DIR/$APP_NAME"

@@ -9,6 +9,7 @@ enum AppTab: String, CaseIterable, Identifiable {
     case smartUninstaller = "Smart Uninstaller"
     case systemJunk = "System Junk"
     case macGaming = "Mac Gaming"
+    case zipCreator = "Zip Creator"
     var id: String { self.rawValue }
 }
 
@@ -46,6 +47,7 @@ struct ContentView: View {
                         sidebarLink(.smartUninstaller, icon: "trash", color: SciFi.neonMagenta)
                         sidebarLink(.systemJunk, icon: "externaldrive.badge.xmark", color: SciFi.neonGreen)
                         sidebarLink(.macGaming, icon: "gamecontroller.fill", color: SciFi.neonOrange)
+                        sidebarLink(.zipCreator, icon: "archivebox.fill", color: SciFi.neonCyan)
                     } header: {
                         HStack(spacing: 8) {
                             Image(systemName: "diamond.fill")
@@ -84,6 +86,8 @@ struct ContentView: View {
                         SystemJunkView()
                     } else if selectedTab == .macGaming {
                         MacGamingEstimatorView()
+                    } else if selectedTab == .zipCreator {
+                        ZipCreatorView()
                     } else {
                         VStack(spacing: 16) {
                             Image(systemName: "sparkles")
