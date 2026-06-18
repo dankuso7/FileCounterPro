@@ -755,25 +755,60 @@ struct VirusScannerView: View {
                                         }
                                     }
                                     
-                                    if result.aiExplanation != nil {
+                                    HStack(spacing: 8) {
+                                        if result.aiExplanation != nil {
+                                            Button(action: {
+                                                vvs.selectedResultForAI = result
+                                            }) {
+                                                HStack(spacing: 4) {
+                                                    Image(systemName: "sparkles")
+                                                    Text("AI Threat Analysis")
+                                                }
+                                                .font(.system(size: 11, weight: .bold, design: .monospaced))
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 4)
+                                                .background(LinearGradient(gradient: Gradient(colors: [SciFi.neonPurple, SciFi.neonMagenta]), startPoint: .leading, endPoint: .trailing))
+                                                .foregroundColor(.white)
+                                                .cornerRadius(6)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                        }
+                                        
                                         Button(action: {
-                                            vvs.selectedResultForAI = result
+                                            scanner.revealInFinder(result)
                                         }) {
                                             HStack(spacing: 4) {
-                                                Image(systemName: "sparkles")
-                                                Text("AI Threat Analysis")
+                                                Image(systemName: "folder.fill")
+                                                Text("Show in Finder")
                                             }
                                             .font(.system(size: 11, weight: .bold, design: .monospaced))
                                             .padding(.horizontal, 8)
                                             .padding(.vertical, 4)
-                                            .background(LinearGradient(gradient: Gradient(colors: [SciFi.neonPurple, SciFi.neonMagenta]), startPoint: .leading, endPoint: .trailing))
-                                            .foregroundColor(.white)
-                                            .clipShape(Capsule())
-                                            .shadow(color: SciFi.neonPurple.opacity(0.4), radius: 4)
+                                            .background(SciFi.neonCyan.opacity(0.2))
+                                            .foregroundColor(SciFi.neonCyan)
+                                            .overlay(RoundedRectangle(cornerRadius: 6).stroke(SciFi.neonCyan.opacity(0.4), lineWidth: 1))
+                                            .cornerRadius(6)
                                         }
-                                        .buttonStyle(.plain)
-                                        .padding(.top, 4)
+                                        .buttonStyle(PlainButtonStyle())
+                                        
+                                        Button(action: {
+                                            scanner.deleteThreat(result)
+                                        }) {
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "trash.fill")
+                                                Text("Delete File")
+                                            }
+                                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(SciFi.neonMagenta.opacity(0.2))
+                                            .foregroundColor(SciFi.neonMagenta)
+                                            .overlay(RoundedRectangle(cornerRadius: 6).stroke(SciFi.neonMagenta.opacity(0.4), lineWidth: 1))
+                                            .cornerRadius(6)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
                                     }
+                                    .padding(.top, 4)
                                 }
                             }
                         }

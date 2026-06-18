@@ -1,4 +1,5 @@
 import Foundation
+import AppKit
 
 struct ScanResult: Identifiable, Equatable {
     let id = UUID()
@@ -71,6 +72,25 @@ class LargeFileScanner: ObservableObject {
     
     func scanFile(at url: URL) {
         startScan(urls: [url])
+    }
+    
+    func deleteThreat(_ result: ScanResult) {
+        let url = URL(fileURLWithPath: result.filePath)
+        NSWorkspace.shared.recycle([url], completionHandler: { (newURLs, error) in
+            DispatchQueue.main.async {
+                if error == nil {
+                    self.scanResults.removeAll(where: { $0.id == result.id })
+                    if self.scanResults.filter({ $0.isMalicious }).isEmpty {
+                        self.isClean = true
+                    }
+                }
+            }
+        })
+    }
+    
+    func revealInFinder(_ result: ScanResult) {
+        let url = URL(fileURLWithPath: result.filePath)
+        NSWorkspace.shared.activateFileViewerSelecting([url])
     }
     
     func scanFullSystem() {
