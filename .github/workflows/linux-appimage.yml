@@ -1,0 +1,73 @@
+name: Build Linux AppImage
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '6.5.0'
+          host: 'linux'
+          target: 'desktop'
+          modules: 'qtdeclarative'
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake file
+          sudo wget -qO /usr/local/bin/linuxdeployqt https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
+          sudo chmod a+x /usr/local/bin/linuxdeployqt
+
+      - name: Build App
+        run: |
+          mkdir -p linux/build
+          cd linux/build
+          cmake ..
+          make -j$(nproc)
+
+      - name: Create AppDir & AppImage
+        run: |
+          cd linux/build
+          mkdir -p AppDir/usr/bin
+          cp FileCounterProLinux AppDir/usr/bin/
+          
+          # Basic Desktop file
+          cat > AppDir/filecounterpro.desktop <<EOF
+          [Desktop Entry]
+          Name=FileCounter Pro
+          Exec=FileCounterProLinux
+          Icon=filecounterpro
+          Type=Application
+          Categories=Utility;
+          EOF
+          
+          # Basic Icon
+          touch AppDir/filecounterpro.png
+          
+          # Use linuxdeployqt to bundle dependencies and create AppImage
+          # Extract the AppImage first to avoid FUSE issues in docker/actions
+          /usr/local/bin/linuxdeployqt --appimage-extract
+          ./squashfs-root/AppRun AppDir/usr/bin/FileCounterProLinux -bundle-non-qt-libs
+          ./squashfs-root/AppRun AppDir/usr/bin/FileCounterProLinux -appimage
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: linux/build/FileCounterPro-*-x86_64.AppImage
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
