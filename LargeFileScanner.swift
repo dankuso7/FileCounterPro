@@ -21,7 +21,8 @@ class LargeFileScanner: ObservableObject {
     let badStrings = [
         "LaunchAgents", "LaunchDaemons", "osascript -e", ".zshrc", 
         ".bash_profile", "base64_decode", "/dev/tcp", "nc -e", 
-        "chmod +x", "curl -sL", "wget -q", "crontab", "rm -rf /"
+        "chmod +x", "curl -sL", "wget -q", "crontab", "rm -rf /",
+        "miner", "xmrig", "cgminer", "ncat", "pupy", "empire", "metasploit", "stratum+tcp"
     ]
     
     private func generateAIAnalysis(for signs: [String]) -> String? {
@@ -69,29 +70,50 @@ class LargeFileScanner: ObservableObject {
     }
     
     func scanFile(at url: URL) {
+        startScan(urls: [url])
+    }
+    
+    func scanFullSystem() {
+        let fileManager = FileManager.default
+        let homeDir = fileManager.homeDirectoryForCurrentUser
+        
+        let criticalDirs: [URL] = [
+            homeDir.appendingPathComponent("Downloads"),
+            homeDir.appendingPathComponent("Library/LaunchAgents"),
+            URL(fileURLWithPath: "/Library/LaunchAgents"),
+            URL(fileURLWithPath: "/Library/LaunchDaemons"),
+            URL(fileURLWithPath: "/tmp")
+        ]
+        
+        startScan(urls: criticalDirs)
+    }
+    
+    private func startScan(urls: [URL]) {
         DispatchQueue.main.async {
             self.isScanning = true
             self.scanProgress = 0.0
             self.scanResults = []
             self.scanComplete = false
             self.isClean = false
-            self.scannedFileName = url.lastPathComponent
+            self.scannedFileName = urls.count == 1 ? urls[0].lastPathComponent : "Full System Scan"
         }
         
         DispatchQueue.global(qos: .userInitiated).async {
             var filesToScan: [URL] = []
             
-            var isDir: ObjCBool = false
-            if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir), isDir.boolValue {
-                if let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
-                    for case let fileURL as URL in enumerator {
-                        if let attrs = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]), attrs.isRegularFile == true {
-                            filesToScan.append(fileURL)
+            for url in urls {
+                var isDir: ObjCBool = false
+                if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir), isDir.boolValue {
+                    if let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
+                        for case let fileURL as URL in enumerator {
+                            if let attrs = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]), attrs.isRegularFile == true {
+                                filesToScan.append(fileURL)
+                            }
                         }
                     }
+                } else if FileManager.default.fileExists(atPath: url.path) {
+                    filesToScan.append(url)
                 }
-            } else {
-                filesToScan.append(url)
             }
             
             var totalBytes: Int64 = 0

@@ -670,17 +670,37 @@ struct VirusScannerView: View {
                             .font(.system(.caption, design: .monospaced))
                             .foregroundColor(SciFi.neonMagenta)
                     } else {
-                        Button(action: selectDrive) {
-                            HStack(spacing: 8) {
-                                Image(systemName: "externaldrive.badge.plus")
-                                Text("Select Drive / File")
+                        HStack(spacing: 16) {
+                            Button(action: selectDrive) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "externaldrive.badge.plus")
+                                    Text("Select File")
+                                }
+                                .font(.system(.headline, design: .monospaced))
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 8)
+                                .background(Color.white.opacity(0.05))
+                                .cornerRadius(8)
+                                .overlay(RoundedRectangle(cornerRadius: 8).stroke(SciFi.textDim.opacity(0.5), lineWidth: 1))
                             }
-                            .font(.system(.headline, design: .monospaced))
-                            .padding(.horizontal, 30)
-                            .padding(.vertical, 8)
+                            .buttonStyle(.plain)
+                            
+                            Button(action: { scanner.scanFullSystem() }) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "bolt.shield.fill")
+                                    Text("Full System Scan")
+                                }
+                                .font(.system(.headline, design: .monospaced))
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 8)
+                                .background(SciFi.neonMagenta.opacity(0.1))
+                                .foregroundColor(SciFi.neonMagenta)
+                                .cornerRadius(8)
+                                .overlay(RoundedRectangle(cornerRadius: 8).stroke(SciFi.neonMagenta.opacity(0.5), lineWidth: 1))
+                                .shadow(color: SciFi.neonMagenta.opacity(0.4), radius: 5)
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(SciFi.neonMagenta)
                     }
                 }
             }

@@ -66,20 +66,14 @@ final class ZipEngine: ObservableObject {
             
             // Build zip command
             let p = Process()
-            p.executableURL = URL(fileURLWithPath: "/usr/bin/zip")
+            p.executableURL = URL(fileURLWithPath: "/bin/sh")
             
-            // Flags: -r (recursive), -<level> (compression), -q (quiet except for our progress trick)
-            // Wait, we actually want verbose output so we can parse lines to show progress.
-            // "zip -r -0 dest.zip source1 source2"
+            let parentPath = sourceURLs.first!.deletingLastPathComponent().path
+            let destPath = destinationURL.path
+            let fileNames = sourceURLs.map { "'\($0.lastPathComponent)'" }.joined(separator: " ")
+            let bashCommand = "cd '\(parentPath)' && /usr/bin/zip -r -\(level.rawValue) '\(destPath)' \(fileNames)"
             
-            var arguments = ["-r", "-\(level.rawValue)", destinationURL.path]
-            for url in sourceURLs {
-                // To keep relative paths clean, we should set the current directory to the parent of the first item
-                arguments.append(url.lastPathComponent)
-            }
-            
-            p.arguments = arguments
-            p.currentDirectoryURL = sourceURLs.first?.deletingLastPathComponent()
+            p.arguments = ["-c", bashCommand]
             
             let pipe = Pipe()
             p.standardOutput = pipe

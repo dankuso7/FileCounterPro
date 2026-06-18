@@ -92,9 +92,17 @@ struct ZipCreatorView: View {
                 vs.droppedURLs.removeAll()
                 for provider in providers {
                     provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, error in
-                        if let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
+                        if let data = item as? Data, let urlString = String(data: data, encoding: .utf8), let url = URL(string: urlString) {
                             DispatchQueue.main.async {
-                                self.vs.droppedURLs.append(url)
+                                self.vs.droppedURLs.append(url.standardizedFileURL)
+                            }
+                        } else if let url = item as? URL {
+                            DispatchQueue.main.async {
+                                self.vs.droppedURLs.append(url.standardizedFileURL)
+                            }
+                        } else if let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
+                            DispatchQueue.main.async {
+                                self.vs.droppedURLs.append(url.standardizedFileURL)
                             }
                         }
                     }
@@ -212,7 +220,7 @@ struct ZipCreatorView: View {
     }
     
     private func startCompression() {
-        guard !droppedURLs.isEmpty else { return }
+        guard !vs.droppedURLs.isEmpty else { return }
         
         let savePanel = NSSavePanel()
         savePanel.allowedContentTypes = [UTType.zip]
@@ -220,7 +228,7 @@ struct ZipCreatorView: View {
         savePanel.title = "Save Zip File"
         
         if savePanel.runModal() == .OK, let destURL = savePanel.url {
-            engine.createZip(sourceURLs: droppedURLs, destinationURL: destURL, level: selectedLevel)
+            engine.createZip(sourceURLs: vs.droppedURLs, destinationURL: destURL, level: vs.selectedLevel)
         }
     }
 }
