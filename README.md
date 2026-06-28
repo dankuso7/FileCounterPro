@@ -111,6 +111,28 @@ Just drag **FileCounter** from your Applications folder into the Trash. Done!
 
 ---
 
+## 🐧 How to Install on Linux
+
+We provide a portable AppImage that works on almost all Linux distributions (Ubuntu, Fedora, Arch, etc.).
+
+1. Go to the [Releases tab](../../releases) on this GitHub repository.
+2. Download the `FileCounterPro-Linux-x86_64.AppImage` file.
+3. Open your terminal and navigate to your downloads folder:
+   ```bash
+   cd ~/Downloads
+   ```
+4. Make the AppImage executable:
+   ```bash
+   chmod +x FileCounterPro-Linux-x86_64.AppImage
+   ```
+5. Run the app:
+   ```bash
+   ./FileCounterPro-Linux-x86_64.AppImage
+   ```
+*(You can also double-click it in your file manager if your distro supports running AppImages natively).*
+
+---
+
 ## 🚀 How to Use
 
 ### Dashboard (Folder Analyzer)

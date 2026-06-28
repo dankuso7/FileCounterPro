@@ -2,6 +2,8 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "BackendInfo.h"
+#include "VirusScannerBackend.h"
+#include "HardwareAnalyzerBackend.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,7 +13,12 @@ int main(int argc, char *argv[])
 
     // Register BackendInfo with QML
     BackendInfo backendInfo;
+    VirusScannerBackend virusScannerBackend;
+    HardwareAnalyzerBackend hardwareBackend;
+
     engine.rootContext()->setContextProperty("backendInfo", &backendInfo);
+    engine.rootContext()->setContextProperty("virusScannerBackend", &virusScannerBackend);
+    engine.rootContext()->setContextProperty("hardwareBackend", &hardwareBackend);
 
     const QUrl url(u"qrc:/qml/Main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed,

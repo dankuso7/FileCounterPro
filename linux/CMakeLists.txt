@@ -4,7 +4,7 @@ project(FileCounterProLinux VERSION 2.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2 Concurrent)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -15,6 +15,8 @@ set(PROJECT_SOURCES
     src/main.cpp
     src/BackendInfo.cpp
     src/BackendInfo.h
+    src/VirusScannerBackend.cpp
+    src/HardwareAnalyzerBackend.cpp
     qml.qrc
 )
 
@@ -29,6 +31,7 @@ target_link_libraries(FileCounterProLinux PRIVATE
     Qt6::Qml
     Qt6::Quick
     Qt6::QuickControls2
+    Qt6::Concurrent
 )
 
 set_target_properties(FileCounterProLinux PROPERTIES

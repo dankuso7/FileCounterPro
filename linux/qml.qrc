@@ -3,5 +3,8 @@
         <file>qml/Main.qml</file>
         <file>qml/SciFiTheme.qml</file>
         <file>qml/qmldir</file>
+        <file>qml/DashboardView.qml</file>
+        <file>qml/VirusScannerView.qml</file>
+        <file>qml/HardwareAnalyzerView.qml</file>
     </qresource>
 </RCC>

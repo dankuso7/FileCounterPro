@@ -44,20 +44,75 @@ ApplicationWindow {
                     font.family: "Monospace"
                 }
 
-                Rectangle {
+                // Navigation Buttons
+                ColumnLayout {
+                    spacing: 10
                     Layout.fillWidth: true
-                    height: 40
-                    color: SciFiTheme.neonCyan
-                    opacity: 0.1
-                    radius: 8
-                    border.color: SciFiTheme.neonCyan
-                    
-                    Text {
-                        anchors.centerIn: parent
-                        text: "Dashboard"
-                        color: SciFiTheme.neonCyan
-                        font.family: "Monospace"
-                        font.pixelSize: 14
+
+                    // Dashboard Button
+                    Rectangle {
+                        Layout.fillWidth: true
+                        height: 40
+                        color: stackLayout.currentIndex === 0 ? "#3300ffff" : "transparent"
+                        radius: 8
+                        border.color: SciFiTheme.neonCyan
+                        border.width: stackLayout.currentIndex === 0 ? 1 : 0
+                        
+                        Text {
+                            anchors.centerIn: parent
+                            text: "📊 Dashboard"
+                            color: SciFiTheme.neonCyan
+                            font.family: "Monospace"
+                            font.pixelSize: 14
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: stackLayout.currentIndex = 0
+                        }
+                    }
+
+                    // Virus Scanner Button
+                    Rectangle {
+                        Layout.fillWidth: true
+                        height: 40
+                        color: stackLayout.currentIndex === 1 ? "#33ff00ff" : "transparent"
+                        radius: 8
+                        border.color: SciFiTheme.neonMagenta
+                        border.width: stackLayout.currentIndex === 1 ? 1 : 0
+                        
+                        Text {
+                            anchors.centerIn: parent
+                            text: "🛡️ Virus Scanner"
+                            color: SciFiTheme.neonMagenta
+                            font.family: "Monospace"
+                            font.pixelSize: 14
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: stackLayout.currentIndex = 1
+                        }
+                    }
+
+                    // Hardware Analyzer Button
+                    Rectangle {
+                        Layout.fillWidth: true
+                        height: 40
+                        color: stackLayout.currentIndex === 2 ? "#3339ff14" : "transparent"
+                        radius: 8
+                        border.color: SciFiTheme.neonGreen
+                        border.width: stackLayout.currentIndex === 2 ? 1 : 0
+                        
+                        Text {
+                            anchors.centerIn: parent
+                            text: "💻 Hardware Analyzer"
+                            color: SciFiTheme.neonGreen
+                            font.family: "Monospace"
+                            font.pixelSize: 14
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: stackLayout.currentIndex = 2
+                        }
                     }
                 }
 
@@ -70,83 +125,30 @@ ApplicationWindow {
             Layout.fillWidth: true
             Layout.fillHeight: true
             color: "transparent"
+            clip: true
 
-            ColumnLayout {
-                anchors.centerIn: parent
-                spacing: 30
-
-                Text {
-                    text: "LINUX DASHBOARD"
-                    color: SciFiTheme.textMain
-                    font.pixelSize: 32
-                    font.bold: true
-                    font.family: "Monospace"
-                    Layout.alignment: Qt.AlignHCenter
+            StackLayout {
+                id: stackLayout
+                anchors.fill: parent
+                currentIndex: 0
+                
+                onCurrentIndexChanged: {
+                    contentFadeAnimation.restart()
                 }
 
-                Text {
-                    text: "Scan any directory with zero memory overhead"
-                    color: SciFiTheme.textDim
-                    font.pixelSize: 14
-                    font.family: "Monospace"
-                    Layout.alignment: Qt.AlignHCenter
-                }
+                DashboardView { }
+                VirusScannerView { }
+                HardwareAnalyzerView { }
+            }
 
-                Rectangle {
-                    width: 300
-                    height: 150
-                    color: "transparent"
-                    border.color: SciFiTheme.neonPurple
-                    border.width: 2
-                    radius: 12
-                    Layout.alignment: Qt.AlignHCenter
-
-                    ColumnLayout {
-                        anchors.centerIn: parent
-                        spacing: 15
-
-                        Text {
-                            text: backendInfo.isScanning ? "SCANNING..." : (backendInfo.fileCount > 0 ? "TOTAL FILES" : "READY")
-                            color: SciFiTheme.textDim
-                            font.pixelSize: 12
-                            font.family: "Monospace"
-                            Layout.alignment: Qt.AlignHCenter
-                        }
-
-                        Text {
-                            text: backendInfo.fileCount.toString()
-                            color: SciFiTheme.neonPurple
-                            font.pixelSize: 48
-                            font.bold: true
-                            font.family: "Monospace"
-                            Layout.alignment: Qt.AlignHCenter
-                        }
-                    }
-                }
-
-                Button {
-                    text: "Select Directory"
-                    Layout.alignment: Qt.AlignHCenter
-                    
-                    contentItem: Text {
-                        text: parent.text
-                        color: SciFiTheme.neonPurple
-                        font.family: "Monospace"
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-
-                    background: Rectangle {
-                        implicitWidth: 200
-                        implicitHeight: 45
-                        color: parent.down ? SciFiTheme.bgCard : "transparent"
-                        border.color: SciFiTheme.neonPurple
-                        radius: 8
-                    }
-
-                    onClicked: folderDialog.open()
-                }
+            PropertyAnimation {
+                id: contentFadeAnimation
+                target: stackLayout
+                property: "opacity"
+                from: 0.0
+                to: 1.0
+                duration: 300
+                easing.type: Easing.OutCubic
             }
         }
     }
