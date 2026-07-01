@@ -14,7 +14,7 @@ enum AppTab: String, CaseIterable, Identifiable {
 }
 
 final class ContentViewState: ObservableObject {
-    @Published var selectedTab: AppTab? = .dashboard
+    @Published var selectedTab: AppTab? = .virusScanner
     @Published var selectedItemForAI: FileItem? = nil
     @Published var selectedDriveForDetails: DriveInfo? = nil
 }

@@ -39,9 +39,24 @@ void VirusScannerBackend::scanCriticalPaths()
                 QString name = fileInfo.fileName().toLower();
                 for (const QString &sig : badSignatures) {
                     if (name.contains(sig)) {
-                        // Use QMetaObject::invokeMethod to safely update the UI thread
-                        QMetaObject::invokeMethod(this, [this, fileInfo, sig]() {
-                            addThreat(fileInfo.fileName(), fileInfo.absoluteFilePath(), "Matched known malicious signature: " + sig);
+                        QString reason = "Matched known malicious signature: " + sig;
+                        QString aiExp = "⚠️ **DELETION IMPACT ANALYSIS:**\n";
+                        QString lowerPath = fileInfo.absoluteFilePath().toLower();
+                        
+                        if (lowerPath.contains("/usr/") || lowerPath.contains("/bin/") || lowerPath.contains("/sbin/") || lowerPath.contains("/etc/") || lowerPath.contains("/lib")) {
+                            aiExp += "CRITICAL WARNING: This is a core Linux system path. Deleting this may break your operating system, package manager, or prevent booting. Do not delete unless you are a Linux expert.";
+                        } else if (lowerPath.contains("/steamapps/common/") || lowerPath.contains("/games/") || lowerPath.contains(".local/share/lutris/runners/")) {
+                            aiExp += "This appears to be part of a Game installation (e.g. Steam, Lutris). Deleting it will likely corrupt the game or translation layer (like Proton/Wine). False positives are common with game anti-cheat systems.";
+                        } else if (lowerPath.contains(".config/autostart/")) {
+                            aiExp += "This file is configured to run automatically when you log in. Deleting it will stop the program from auto-starting, which is safe if you don't recognize the program.";
+                        } else if (lowerPath.contains("/tmp/")) {
+                            aiExp += "This file is in the temporary directory. It is generally safe to delete, as the system clears this folder on reboot anyway.";
+                        } else {
+                            aiExp += "Deleting this file will permanently remove it. If it belongs to a specific application, that application may stop working properly.";
+                        }
+                        
+                        QMetaObject::invokeMethod(this, [this, fileInfo, reason, aiExp]() {
+                            addThreat(fileInfo.fileName(), fileInfo.absoluteFilePath(), reason, aiExp);
                         });
                         break; // Stop checking this file if one matches
                     }
@@ -56,12 +71,13 @@ void VirusScannerBackend::scanCriticalPaths()
     });
 }
 
-void VirusScannerBackend::addThreat(const QString &fileName, const QString &filePath, const QString &reason)
+void VirusScannerBackend::addThreat(const QString &fileName, const QString &filePath, const QString &reason, const QString &aiExp)
 {
     QVariantMap threat;
     threat["fileName"] = fileName;
     threat["filePath"] = filePath;
     threat["reason"] = reason;
+    threat["aiExplanation"] = aiExp;
     m_threats.append(threat);
     emit threatsChanged();
     emit threatCountChanged();

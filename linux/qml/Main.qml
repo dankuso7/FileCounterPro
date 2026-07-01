@@ -130,7 +130,7 @@ ApplicationWindow {
             StackLayout {
                 id: stackLayout
                 anchors.fill: parent
-                currentIndex: 0
+                currentIndex: 1
                 
                 onCurrentIndexChanged: {
                     contentFadeAnimation.restart()

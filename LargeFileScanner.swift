@@ -26,7 +26,7 @@ class LargeFileScanner: ObservableObject {
         "miner", "xmrig", "cgminer", "ncat", "pupy", "empire", "metasploit", "stratum+tcp"
     ]
     
-    private func generateAIAnalysis(for signs: [String]) -> String? {
+    private func generateAIAnalysis(for signs: [String], filePath: String) -> String? {
         guard !signs.isEmpty else { return nil }
         
         var explanation = "Based on the detected code signatures, this file exhibits the following behaviors:\n\n"
@@ -64,8 +64,29 @@ class LargeFileScanner: ObservableObject {
             mainProblem = "Suspicious System Modifications"
         }
         
+        // Deletion Impact Analysis
+        var deletionImpact = "\n\n⚠️ **DELETION IMPACT ANALYSIS:**\n"
+        let lowerPath = filePath.lowercased()
+        
+        if lowerPath.contains(".app/contents/") {
+            deletionImpact += "This file is part of an application bundle. Deleting it will permanently corrupt the application, and it will no longer launch. Only delete if you are certain the entire app is malicious."
+        } else if lowerPath.contains("/steamapps/common/") || lowerPath.contains("epic games") || lowerPath.contains("/games/") {
+            deletionImpact += "This file appears to belong to a Game installation. Deleting it will likely break the game, requiring you to 'Verify Integrity of Game Files' or reinstall the game entirely. Sometimes game anti-cheat or DRM systems trigger false positives."
+        } else if lowerPath.hasPrefix("/system/") || lowerPath.hasPrefix("/usr/") || lowerPath.hasPrefix("/bin/") || lowerPath.hasPrefix("/sbin/") {
+            deletionImpact += "CRITICAL WARNING: This is a core macOS system path. Deleting files here can cause fatal system instability, kernel panics, or prevent your Mac from booting. Do not delete unless absolutely necessary."
+        } else if lowerPath.hasPrefix("/library/") && !lowerPath.hasPrefix("/library/launch") {
+            deletionImpact += "This file is in the shared System Library. Deleting it may break functionality for all users on this Mac or cause system services to fail."
+        } else if lowerPath.hasPrefix(FileManager.default.homeDirectoryForCurrentUser.path.lowercased() + "/library/") && !lowerPath.contains("launchagents") {
+            deletionImpact += "This file is in your personal Library (e.g., Application Support or Preferences). Deleting it might reset settings or break a specific app installed for your user."
+        } else if lowerPath.contains("downloads") || lowerPath.contains("desktop") {
+            deletionImpact += "This file is in a user directory (Downloads/Desktop). It is generally safe to delete if you do not recognize it, as it won't break core system functions or installed apps (unless it's a standalone tool)."
+        } else {
+            deletionImpact += "Deleting this file will permanently remove it from your system. If it belongs to an app or game not recognized above, that software may stop working."
+        }
+        
         explanation += behaviors.joined(separator: "\n\n")
         explanation += "\n\n**Main Problem:** \(mainProblem)"
+        explanation += deletionImpact
         
         return explanation
     }
@@ -190,7 +211,7 @@ class LargeFileScanner: ObservableObject {
                 try? handle.close()
                 
                 let signsArray = Array(localThreats)
-                let explanation = self.generateAIAnalysis(for: signsArray)
+                let explanation = self.generateAIAnalysis(for: signsArray, filePath: fileURL.path)
                 
                 let result = ScanResult(
                     fileName: fileURL.lastPathComponent,

@@ -69,7 +69,7 @@ Item {
 
                 delegate: Rectangle {
                     width: threatList.width
-                    height: 70
+                    height: 120
                     color: "#1a11111a"
                     border.color: SciFiTheme.neonMagenta
                     border.width: 1
@@ -100,6 +100,13 @@ Item {
                                 font.pixelSize: 11
                                 font.italic: true
                                 opacity: 0.8
+                            }
+                            Text {
+                                text: modelData.aiExplanation
+                                color: SciFiTheme.neonCyan
+                                font.pixelSize: 10
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
                             }
                         }
 

@@ -30,7 +30,7 @@ signals:
 private:
     bool m_isScanning;
     QVariantList m_threats;
-    void addThreat(const QString &fileName, const QString &filePath, const QString &reason);
+    void addThreat(const QString &fileName, const QString &filePath, const QString &reason, const QString &aiExp);
 };
 
 #endif // VIRUSSCANNERBACKEND_H
